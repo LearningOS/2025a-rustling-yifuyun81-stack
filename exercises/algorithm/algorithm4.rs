@@ -3,7 +3,6 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -39,7 +38,7 @@ where
     }
 }
 
-impl<T> BinarySearchTree<T>
+impl<T : PartialOrd> BinarySearchTree<T>
 where
     T: Ord,
 {
@@ -51,12 +50,61 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        let new_node = Box::new(TreeNode::new(value));
+        let mut current = &mut self.root;
+        if current.is_none() {
+            *current = Some(new_node);
+            return;
+        }
+        loop {
+            match current {
+                Some(ref mut node) => {
+                    if new_node.value < node.value {
+                        if node.left.is_none() {
+                            node.left = Some(new_node);
+                            return;
+                        } else {
+                            current = &mut node.left;
+                        }
+                    } else if new_node.value > node.value {
+                        if node.right.is_none() {
+                            node.right = Some(new_node);
+                            return;
+                        } else {
+                            current = &mut node.right;
+                        }
+                    } else {
+                        // Value already exists, do not insert duplicates
+                        return;
+                    }
+                }
+                None => {
+                    *current = Some(new_node);
+                    return;
+                }
+            }
+        }
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        let mut current = &self.root;
+        loop {
+            match current {
+                Some(ref node) => {
+                    if value == node.value {
+                        return true;
+                    } else if value < node.value {
+                        current = &node.left;
+                    } else {
+                        current = &node.right;
+                    }
+                }
+                None => return false,
+            }
+        }
+        false 
     }
 }
 
